@@ -183,6 +183,16 @@
     .fw-stat { font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
     .fw-stat strong { color: var(--text); }
 
+    /* ─── DATA STATUS BADGE ─── */
+    .data-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.4px; }
+    .data-badge-live { background:rgba(0,212,170,0.12); border:1px solid rgba(0,212,170,0.3); color:var(--accent2); }
+    .data-badge-cached { background:rgba(255,169,77,0.12); border:1px solid rgba(255,169,77,0.3); color:var(--accent4); }
+    .data-badge-static { background:rgba(122,128,153,0.1); border:1px solid rgba(122,128,153,0.2); color:var(--muted); }
+    .data-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .data-dot-live { background:var(--accent2); animation:pulse 1.5s infinite; }
+    .data-dot-cached { background:var(--accent4); }
+    .data-dot-static { background:var(--muted); }
+
     /* ─── ERROR ─── */
     .error-box { background: rgba(255,101,132,0.08); border: 1px solid rgba(255,101,132,0.2); border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.82rem; color: var(--accent3); margin-bottom: 1rem; }
 
@@ -405,10 +415,14 @@
           <div class="section-icon" style="background:rgba(255,102,0,0.15)">🗞️</div>
           Latest Tech News
         </div>
-        <button class="refresh-btn" :class="{spinning:loadingNews}" @click="loadNews">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          Refresh
-        </button>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span v-if="newsIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
+          <span v-else-if="newsIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <button class="refresh-btn" :class="{spinning:loadingNews}" @click="loadNews">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
       </div>
       <div v-if="newsError" class="error-box">⚠ {{ newsError }} — showing cached articles</div>
       <div v-if="loadingNews" class="skeleton-grid">
@@ -441,10 +455,14 @@
           <div class="section-icon" style="background:rgba(247,223,30,0.15)">🟨</div>
           JavaScript, Node.js &amp; Latest Frameworks
         </div>
-        <button class="refresh-btn" :class="{spinning:loadingJS}" @click="loadJS">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          Refresh
-        </button>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span v-if="jsIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
+          <span v-else-if="jsIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <button class="refresh-btn" :class="{spinning:loadingJS}" @click="loadJS">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
       </div>
       <div v-if="jsError" class="error-box">⚠ {{ jsError }} — showing curated content</div>
 
@@ -536,6 +554,7 @@
           <div class="section-icon" style="background:rgba(255,101,132,0.15)">🔥</div>
           Trending Tech Stacks (2025–2026)
         </div>
+        <span class="data-badge data-badge-static"><span class="data-dot data-dot-static"></span>STATIC DATA</span>
       </div>
       <div class="stacks-grid">
         <div class="stack-card" v-for="s in stacks" :key="s.name">
@@ -558,6 +577,7 @@
           <div class="section-icon" style="background:rgba(0,212,170,0.15)">💼</div>
           Skills Most In-Demand Right Now
         </div>
+        <span class="data-badge data-badge-static"><span class="data-dot data-dot-static"></span>STATIC DATA</span>
       </div>
       <div class="jobs-layout">
         <div class="job-cat-card" v-for="cat in jobCategories" :key="cat.title">
@@ -582,10 +602,14 @@
           <div class="section-icon" style="background:rgba(108,99,255,0.15)">🤖</div>
           AI &amp; LLM Updates
         </div>
-        <button class="refresh-btn" :class="{spinning:loadingAI}" @click="loadAI">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          Refresh
-        </button>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span v-if="aiIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
+          <span v-else-if="aiIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <button class="refresh-btn" :class="{spinning:loadingAI}" @click="loadAI">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
       </div>
       <div v-if="aiError" class="error-box">⚠ {{ aiError }} — showing curated updates</div>
       <div class="ai-featured" v-if="aiItems.length">
@@ -682,7 +706,7 @@ function aiCategory(title) {
 const STATIC_NEWS = [
   { id:1, title:"Rust is now the 3rd most-used language in the Linux kernel", url:"https://news.ycombinator.com", source:"HN", sourceClass:"source-hn", score:1842, comments:312, timeAgo:"2h ago", domain:"linux.dev", tags:["Rust","Linux","Systems"] },
   { id:2, title:"OpenAI releases o3-mini with function calling and 128k context", url:"https://openai.com", source:"HN", sourceClass:"source-hn", score:2105, comments:498, timeAgo:"4h ago", domain:"openai.com", tags:["AI","LLM","OpenAI"] },
-  { id:3, title:"Bun 2.0: faster Node.js replacement now production-ready", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:1560, comments:284, timeAgo:"6h ago", domain:"bun.sh", tags:["JavaScript","Runtime","Bun"] },
+  { id:3, title:"Bun 1.2: faster Node.js replacement now production-ready", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:1560, comments:284, timeAgo:"6h ago", domain:"bun.sh", tags:["JavaScript","Runtime","Bun"] },
   { id:4, title:"PostgreSQL 17 benchmarks: 40% faster than v16", url:"https://postgresql.org", source:"HN", sourceClass:"source-hn", score:987, comments:142, timeAgo:"8h ago", domain:"postgresql.org", tags:["PostgreSQL","Database"] },
   { id:5, title:"Next.js 15 App Router: Everything you need to know in 2026", url:"https://nextjs.org", source:"DEV", sourceClass:"source-devto", score:645, comments:88, timeAgo:"10h ago", domain:"dev.to", tags:["Next.js","React","SSR"] },
   { id:6, title:"Kubernetes 1.32 drops Docker shim", url:"https://kubernetes.io", source:"HN", sourceClass:"source-hn", score:1023, comments:195, timeAgo:"12h ago", domain:"kubernetes.io", tags:["Kubernetes","Docker","DevOps"] },
@@ -690,7 +714,7 @@ const STATIC_NEWS = [
 
 const STATIC_JS_NEWS = [
   { id:201, title:"Node.js 24 LTS: New V8 engine, built-in fetch, and permission model", url:"https://nodejs.org", source:"HN", sourceClass:"source-hn", score:1980, comments:287, timeAgo:"3h ago", domain:"nodejs.org", tags:["Node.js","JavaScript","V8"] },
-  { id:202, title:"Bun 1.2 ships native S3, SQLite and faster startup than ever", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:2210, comments:412, timeAgo:"5h ago", domain:"bun.sh", tags:["Bun","JavaScript","Runtime"] },
+  { id:202, title:"Bun 1.2: native S3, SQLite and faster startup than ever", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:2210, comments:412, timeAgo:"5h ago", domain:"bun.sh", tags:["Bun","JavaScript","Runtime"] },
   { id:203, title:"Deno 2.1: Full npm compatibility lands — time to migrate?", url:"https://deno.land", source:"HN", sourceClass:"source-hn", score:1340, comments:256, timeAgo:"7h ago", domain:"deno.land", tags:["Deno","Node.js","TypeScript"] },
   { id:204, title:"Hono 4.x: The fastest web framework for every JS runtime", url:"https://hono.dev", source:"DEV", sourceClass:"source-devto", score:876, comments:134, timeAgo:"9h ago", domain:"hono.dev", tags:["Hono","Bun","TypeScript"] },
   { id:205, title:"SvelteKit 2.0 release: runes, snippets, and what changed", url:"https://svelte.dev", source:"DEV", sourceClass:"source-devto", score:1120, comments:198, timeAgo:"11h ago", domain:"svelte.dev", tags:["Svelte","SvelteKit","JavaScript"] },
@@ -700,7 +724,7 @@ const STATIC_JS_NEWS = [
   { id:209, title:"Astro 5 Content Layer: build 10× faster static sites", url:"https://astro.build", source:"DEV", sourceClass:"source-devto", score:743, comments:112, timeAgo:"1d ago", domain:"astro.build", tags:["Astro","JavaScript","SSG"] },
   { id:210, title:"tRPC v11 + Next.js 15: end-to-end type safety guide 2026", url:"https://trpc.io", source:"DEV", sourceClass:"source-devto", score:612, comments:88, timeAgo:"1d ago", domain:"trpc.io", tags:["tRPC","Next.js","TypeScript"] },
   { id:211, title:"Why Fastify beats Express in every production benchmark", url:"https://fastify.dev", source:"HN", sourceClass:"source-hn", score:1102, comments:189, timeAgo:"2d ago", domain:"fastify.dev", tags:["Fastify","Express","Node.js"] },
-  { id:212, title:"Biome 2.0: Replace ESLint and Prettier with one Rust tool", url:"https://biomejs.dev", source:"HN", sourceClass:"source-hn", score:879, comments:145, timeAgo:"2d ago", domain:"biomejs.dev", tags:["Biome","ESLint","Tooling"] },
+  { id:212, title:"Biome 1.x: Replace ESLint and Prettier with one Rust tool", url:"https://biomejs.dev", source:"HN", sourceClass:"source-hn", score:879, comments:145, timeAgo:"2d ago", domain:"biomejs.dev", tags:["Biome","ESLint","Tooling"] },
 ];
 
 const STATIC_AI = [
@@ -738,9 +762,9 @@ const STACKS = [
   { name:"Bun + Hono + Drizzle", icon:"🟨", trend:"🔥 HOT", trendClass:"trend-hot", popularity:80, desc:"The modern JS backend stack: Bun as runtime, Hono for APIs, Drizzle for DB. Blazing fast and type-safe.", tags:["Bun","Hono","Drizzle","TypeScript","PostgreSQL"] },
   { name:"Rust + WebAssembly", icon:"🦀", trend:"↑ Rising", trendClass:"trend-rising", popularity:68, desc:"Systems programming and edge computing. Increasingly sought for performance-critical roles at big tech.", tags:["Rust","WASM","Tokio","Axum","WebAssembly"] },
   { name:"Go + Kubernetes", icon:"🐹", trend:"↑ Rising", trendClass:"trend-rising", popularity:78, desc:"Cloud-native backends and microservices. Go is the language of choice for infrastructure and DevOps tooling.", tags:["Go","K8s","Docker","gRPC","Prometheus"] },
-  { name:"React Native + Expo", icon:"📱", trend:"✓ Stable", trendClass:"trend-stable", popularity:74, desc:"Cross-platform mobile development. Expo SDK 51+ makes native apps easier than ever.", tags:["React Native","Expo","TypeScript","Redux","Firebase"] },
+  { name:"React Native + Expo", icon:"📱", trend:"✓ Stable", trendClass:"trend-stable", popularity:74, desc:"Cross-platform mobile development. Expo SDK 53+ makes native apps easier than ever.", tags:["React Native","Expo","TypeScript","Redux","Firebase"] },
   { name:"Vue 3 + Nuxt 4", icon:"💚", trend:"✓ Stable", trendClass:"trend-stable", popularity:65, desc:"European and startup favourite. Nuxt 4 with Nitro server makes Vue a viable full-stack choice.", tags:["Vue3","Nuxt","Pinia","Vite","TailwindCSS"] },
-  { name:"LLM / AI Engineer", icon:"🤖", trend:"🔥 HOT", trendClass:"trend-hot", popularity:98, desc:"Prompt engineering, RAG pipelines, fine-tuning, and agentic systems. The highest-demand new role of 2025-26.", tags:["Python","LangChain","LlamaIndex","Vector DB","MCP"] },
+  { name:"LLM / AI Engineer", icon:"🤖", trend:"🔥 HOT", trendClass:"trend-hot", popularity:89, desc:"Prompt engineering, RAG pipelines, fine-tuning, and agentic systems. The highest-demand new role of 2025-26.", tags:["Python","LangChain","LlamaIndex","Vector DB","MCP"] },
   { name:"Cloud Native (AWS/GCP)", icon:"☁️", trend:"↑ Rising", trendClass:"trend-rising", popularity:88, desc:"Terraform, CDK, and cloud-native architecture skills. Required for virtually all mid-to-senior backend roles.", tags:["AWS","Terraform","CDK","Lambda","DynamoDB"] },
 ];
 
@@ -764,14 +788,17 @@ createApp({
     const news = ref([]);
     const loadingNews = ref(false);
     const newsError = ref('');
+    const newsIsLive = ref(null);
 
     const jsNews = ref([]);
     const loadingJS = ref(false);
     const jsError = ref('');
+    const jsIsLive = ref(null);
 
     const aiItems = ref([]);
     const loadingAI = ref(false);
     const aiError = ref('');
+    const aiIsLive = ref(null);
 
     const stacks = ref(STACKS);
     const frameworks = ref(FRAMEWORKS);
@@ -806,7 +833,8 @@ createApp({
           timeAgo: timeAgo(item.time), domain: getDomain(item.url),
           tags: detectTags(item.title),
         }));
-      } catch(e) { newsError.value = 'Could not reach Hacker News API.'; news.value = STATIC_NEWS; }
+        newsIsLive.value = true;
+      } catch(e) { newsError.value = 'Could not reach Hacker News API.'; news.value = STATIC_NEWS; newsIsLive.value = false; }
       finally { loadingNews.value = false; }
     }
 
@@ -856,7 +884,8 @@ createApp({
 
         const merged = [...hnJS, ...devtoJS];
         jsNews.value = merged.length > 0 ? merged : STATIC_JS_NEWS;
-      } catch(e) { jsError.value = 'Could not fetch live JS articles.'; jsNews.value = STATIC_JS_NEWS; }
+        jsIsLive.value = merged.length > 0;
+      } catch(e) { jsError.value = 'Could not fetch live JS articles.'; jsNews.value = STATIC_JS_NEWS; jsIsLive.value = false; }
       finally { loadingJS.value = false; }
     }
 
@@ -883,7 +912,8 @@ createApp({
         });
         const merged = [...hnAI, ...devtoAI].slice(0,16);
         aiItems.value = merged.length > 0 ? merged : STATIC_AI;
-      } catch(e) { aiError.value = 'Could not reach API.'; aiItems.value = STATIC_AI; }
+        aiIsLive.value = merged.length > 0;
+      } catch(e) { aiError.value = 'Could not reach API.'; aiItems.value = STATIC_AI; aiIsLive.value = false; }
       finally { loadingAI.value = false; }
     }
 
@@ -928,9 +958,9 @@ createApp({
 
     return {
       activeTab, query, fwFilter, setTab,
-      news, loadingNews, newsError, loadNews,
-      jsNews, loadingJS, jsError, loadJS,
-      aiItems, loadingAI, aiError, loadAI,
+      news, loadingNews, newsError, newsIsLive, loadNews,
+      jsNews, loadingJS, jsError, jsIsLive, loadJS,
+      aiItems, loadingAI, aiError, aiIsLive, loadAI,
       stacks, frameworks, jobCategories,
       filteredNews, filteredJSNews, filteredFrameworks,
       filteredStacks, filteredJobCats, filteredAI,
