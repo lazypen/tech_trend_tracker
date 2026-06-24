@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechPulse — Latest Tech, Trending Stacks & Job Skills</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --bg2: #13161e;
+      --bg3: #1a1e2a;
+      --border: #252a38;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --accent3: #ff6584;
+      --accent4: #ffa94d;
+      --accent5: #f7df1e;
+      --text: #e8eaf0;
+      --muted: #7a8099;
+      --card: #161b27;
+      --card-hover: #1e2435;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ─── HEADER ─── */
+    header { position: relative; overflow: hidden; padding: 2.5rem 2rem 2rem; background: linear-gradient(135deg, #0d0f14 0%, #1a1040 50%, #0d1a2e 100%); border-bottom: 1px solid var(--border); }
+    header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(108,99,255,0.15) 0%, transparent 70%), radial-gradient(ellipse 50% 60% at 80% 30%, rgba(0,212,170,0.1) 0%, transparent 70%); pointer-events: none; }
+    .header-inner { max-width: 1280px; margin: 0 auto; position: relative; }
+    .logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff 0%, var(--accent2) 60%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .tagline { color: var(--muted); font-size: 0.95rem; margin-top: 0.3rem; }
+    .live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.3); color: var(--accent2); border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; margin-top: 0.8rem; }
+    .live-dot { width: 7px; height: 7px; background: var(--accent2); border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+
+    /* ─── NAV ─── */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,15,20,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; padding: 0 1rem; }
+    .nav-inner::-webkit-scrollbar { display: none; }
+    .tab { display: flex; align-items: center; gap: 8px; padding: 1rem 1.25rem; font-size: 0.88rem; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .tab-count { background: var(--bg3); color: var(--muted); border-radius: 10px; padding: 1px 7px; font-size: 0.7rem; }
+    .tab.active .tab-count { background: rgba(108,99,255,0.2); color: var(--accent); }
+
+    /* ─── MAIN ─── */
+    main { max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+    /* ─── SEARCH ─── */
+    .search-wrap { margin-bottom: 1.5rem; }
+    .search-bar { display: flex; align-items: center; gap: 0.75rem; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.65rem 1rem; transition: border-color 0.2s; }
+    .search-bar:focus-within { border-color: var(--accent); }
+    .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 0.9rem; }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-icon { color: var(--muted); font-size: 1rem; }
+    .search-hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; padding-left: 0.25rem; }
+    .search-hint span { color: var(--accent2); font-weight: 600; }
+
+    /* ─── GLOBAL SEARCH RESULTS ─── */
+    .global-results { }
+    .gs-section { margin-bottom: 2rem; }
+    .gs-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .gs-label span { background: rgba(108,99,255,0.15); color: var(--accent); border-radius: 6px; padding: 1px 7px; font-size: 0.68rem; }
+    .gs-more { font-size: 0.78rem; color: var(--accent); cursor: pointer; margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 4px; }
+    .gs-more:hover { text-decoration: underline; }
+    .no-results { text-align: center; padding: 4rem 1rem; color: var(--muted); }
+    .no-results .nr-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .no-results .nr-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
+    .section-title { display: flex; align-items: center; gap: 0.6rem; font-size: 1.15rem; font-weight: 700; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .refresh-btn { display: flex; align-items: center; gap: 5px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+    .refresh-btn:hover { color: var(--text); border-color: var(--accent); }
+    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── FILTER CHIPS ─── */
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .chip { font-size: 0.76rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: all 0.15s; background: var(--bg3); }
+    .chip:hover { color: var(--text); border-color: var(--accent); }
+    .chip.active { background: rgba(108,99,255,0.18); border-color: var(--accent); color: var(--accent); }
+
+    /* ─── NEWS / CARD GRID ─── */
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+    .news-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.25rem; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+    .news-card:hover { background: var(--card-hover); border-color: rgba(108,99,255,0.4); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .card-meta { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+    .source-chip { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; }
+    .source-hn { background: rgba(255,102,0,0.15); color: #ff6600; }
+    .source-devto { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .source-curated { background: rgba(0,212,170,0.15); color: var(--accent2); }
+    .card-time { font-size: 0.72rem; color: var(--muted); }
+    .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.4; margin-bottom: 0.5rem; color: var(--text); }
+    .card-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+    .stat { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--muted); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+    .tag { font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+
+    /* ─── SKELETON ─── */
+    .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+    .skeleton-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; }
+    .skeleton-line { background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 50%, var(--bg3) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .sl1 { height: 10px; width: 60px; margin-bottom: 12px; }
+    .sl2 { height: 14px; width: 100%; margin-bottom: 8px; }
+    .sl3 { height: 14px; width: 80%; margin-bottom: 16px; }
+    .sl4 { height: 10px; width: 40%; }
+
+    /* ─── STACKS ─── */
+    .stacks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .stack-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: all 0.2s; }
+    .stack-card:hover { border-color: rgba(108,99,255,0.4); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+    .stack-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+    .stack-name { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .trend-badge { font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+    .trend-hot { background: rgba(255,101,132,0.15); color: var(--accent3); }
+    .trend-rising { background: rgba(255,169,77,0.15); color: var(--accent4); }
+    .trend-stable { background: rgba(0,212,170,0.15); color: var(--accent2); }
+    .stack-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.8rem; }
+    .stack-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .stack-tag { font-size: 0.7rem; padding: 3px 9px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); }
+    .progress-bar { height: 4px; background: var(--bg3); border-radius: 4px; margin-top: 0.8rem; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .popularity-label { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ─── JOBS ─── */
+    .jobs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 700px) { .jobs-layout { grid-template-columns: 1fr; } }
+    .job-cat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: all 0.2s; }
+    .job-cat-card:hover { border-color: rgba(108,99,255,0.3); }
+    .job-cat-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .job-cat-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem; }
+    .skill-list { display: flex; flex-direction: column; gap: 0.55rem; }
+    .skill-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .skill-name { font-size: 0.82rem; font-weight: 600; min-width: 90px; }
+    .skill-bar-wrap { flex: 1; height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+    .skill-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .skill-demand { font-size: 0.7rem; font-weight: 700; min-width: 34px; text-align: right; color: var(--accent2); }
+    .salary-badge { font-size: 0.7rem; background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.2); color: var(--accent2); padding: 3px 8px; border-radius: 6px; margin-top: 0.8rem; display: inline-block; }
+
+    /* ─── AI SECTION ─── */
+    .ai-featured { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 750px) { .ai-featured { grid-template-columns: 1fr; } }
+    .ai-big-card { background: linear-gradient(135deg, #161b2e 0%, #1a1040 100%); border: 1px solid rgba(108,99,255,0.25); border-radius: 14px; padding: 1.5rem; }
+    .ai-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px; margin-bottom: 0.8rem; }
+    .ai-badge-model { background: rgba(108,99,255,0.2); color: var(--accent); }
+    .ai-badge-tool { background: rgba(0,212,170,0.15); color: var(--accent2); }
+    .ai-badge-research { background: rgba(255,101,132,0.15); color: var(--accent3); }
+    .ai-big-title { font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.6rem; }
+    .ai-big-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.55; }
+    .ai-mini-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+    .ai-mini-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; cursor: pointer; text-decoration: none; color: inherit; display: block; transition: all 0.2s; }
+    .ai-mini-card:hover { border-color: rgba(108,99,255,0.4); background: var(--card-hover); }
+    .ai-mini-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .ai-mini-meta { font-size: 0.72rem; color: var(--muted); }
+
+    /* ─── JS & FRAMEWORKS ─── */
+    .fw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .fw-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: all 0.2s; position: relative; overflow: hidden; }
+    .fw-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); opacity: 0; transition: opacity 0.2s; }
+    .fw-card:hover { border-color: rgba(108,99,255,0.35); transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,0,0,0.28); }
+    .fw-card:hover::before { opacity: 1; }
+    .fw-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.7rem; gap: 0.5rem; }
+    .fw-name { font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+    .fw-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; }
+    .fw-version { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); font-family: monospace; }
+    .fw-cat { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .fw-cat-backend { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .fw-cat-frontend { background: rgba(0,212,170,0.15); color: var(--accent2); }
+    .fw-cat-runtime { background: rgba(255,101,132,0.15); color: var(--accent3); }
+    .fw-cat-tooling { background: rgba(255,169,77,0.15); color: var(--accent4); }
+    .fw-cat-database { background: rgba(247,223,30,0.15); color: var(--accent5); }
+    .fw-cat-api { background: rgba(108,99,255,0.15); color: var(--accent); }
+    .fw-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.8rem; }
+    .fw-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.8rem; }
+    .fw-tag { font-size: 0.68rem; padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border); color: var(--muted); }
+    .fw-stats { display: flex; gap: 1rem; }
+    .fw-stat { font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .fw-stat strong { color: var(--text); }
+
+    /* ─── ERROR ─── */
+    .error-box { background: rgba(255,101,132,0.08); border: 1px solid rgba(255,101,132,0.2); border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.82rem; color: var(--accent3); margin-bottom: 1rem; }
+
+    /* ─── FOOTER ─── */
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.78rem; border-top: 1px solid var(--border); }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      .news-grid, .skeleton-grid, .stacks-grid, .fw-grid { grid-template-columns: 1fr; }
+      main { padding: 1rem 0.75rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <h1>TechPulse</h1>
+      </div>
+      <p class="tagline">Latest tech · Node.js & JS frameworks · trending stacks · skills that land jobs</p>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        LIVE — Hacker News, Dev.to · refreshes on load
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <button class="tab" :class="{active: activeTab==='news'}" @click="setTab('news')">
+        <span>📰</span> Latest News <span class="tab-count">{{ news.length || '—' }}</span>
+      </button>
+      <button class="tab" :class="{active: activeTab==='js'}" @click="setTab('js')">
+        <span>🟨</span> JS &amp; Node.js <span class="tab-count">{{ jsNews.length || '—' }}</span>
+      </button>
+      <button class="tab" :class="{active: activeTab==='stacks'}" @click="setTab('stacks')">
+        <span>🔥</span> Trending Stacks <span class="tab-count">{{ stacks.length }}</span>
+      </button>
+      <button class="tab" :class="{active: activeTab==='jobs'}" @click="setTab('jobs')">
+        <span>💼</span> Job-Ready Skills <span class="tab-count">{{ jobCategories.length }}</span>
+      </button>
+      <button class="tab" :class="{active: activeTab==='ai'}" @click="setTab('ai')">
+        <span>🤖</span> AI &amp; LLM <span class="tab-count">{{ aiItems.length || '—' }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input v-model="query" placeholder="Search across all tabs — news, frameworks, skills, AI…" />
+        <span v-if="query" @click="query=''" style="cursor:pointer;color:var(--muted);font-size:0.85rem;">✕</span>
+      </div>
+      <div class="search-hint" v-if="query">
+        Searching all tabs · <span>{{ globalTotal }} results</span> found
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ GLOBAL SEARCH ══════════════════════════ -->
+    <div v-if="query" class="global-results">
+
+      <!-- No results -->
+      <div v-if="globalTotal === 0" class="no-results">
+        <div class="nr-icon">🔭</div>
+        <div class="nr-title">No results for "{{ query }}"</div>
+        <div style="font-size:0.85rem">Try a different keyword — framework name, language, skill, or topic</div>
+      </div>
+
+      <!-- News results -->
+      <div v-if="filteredNews.length" class="gs-section">
+        <div class="gs-label">📰 Latest News <span>{{ filteredNews.length }}</span></div>
+        <div class="news-grid">
+          <a class="news-card" v-for="item in filteredNews.slice(0,6)" :key="item.id"
+             :href="item.url" target="_blank" rel="noopener noreferrer">
+            <div class="card-meta">
+              <span class="source-chip" :class="item.sourceClass">{{ item.source }}</span>
+              <span class="card-time">{{ item.timeAgo }}</span>
+            </div>
+            <div class="card-title">{{ item.title }}</div>
+            <div class="tag-row"><span class="tag" v-for="t in item.tags" :key="t">{{ t }}</span></div>
+            <div class="card-footer">
+              <span class="stat">▲ {{ item.score }}</span>
+              <span class="stat">💬 {{ item.comments }}</span>
+              <span class="stat" style="margin-left:auto;font-size:0.7rem">{{ item.domain }}</span>
+            </div>
+          </a>
+        </div>
+        <div v-if="filteredNews.length > 6" class="gs-more" @click="setTab('news')">View all {{ filteredNews.length }} news results →</div>
+      </div>
+
+      <!-- JS results -->
+      <div v-if="filteredJSNews.length" class="gs-section">
+        <div class="gs-label">🟨 JS &amp; Node.js <span>{{ filteredJSNews.length }}</span></div>
+        <div class="news-grid">
+          <a class="news-card" v-for="item in filteredJSNews.slice(0,6)" :key="item.id"
+             :href="item.url" target="_blank" rel="noopener noreferrer">
+            <div class="card-meta">
+              <span class="source-chip" :class="item.sourceClass">{{ item.source }}</span>
+              <span class="card-time">{{ item.timeAgo }}</span>
+            </div>
+            <div class="card-title">{{ item.title }}</div>
+            <div class="tag-row"><span class="tag" v-for="t in item.tags" :key="t">{{ t }}</span></div>
+            <div class="card-footer">
+              <span class="stat">▲ {{ item.score }}</span>
+              <span class="stat">💬 {{ item.comments }}</span>
+            </div>
+          </a>
+        </div>
+        <div v-if="filteredJSNews.length > 6" class="gs-more" @click="setTab('js')">View all {{ filteredJSNews.length }} JS results →</div>
+      </div>
+
+      <!-- Frameworks results -->
+      <div v-if="filteredFrameworks.length" class="gs-section">
+        <div class="gs-label">⚙️ Frameworks <span>{{ filteredFrameworks.length }}</span></div>
+        <div class="fw-grid">
+          <div class="fw-card" v-for="f in filteredFrameworks.slice(0,6)" :key="f.name">
+            <div class="fw-header">
+              <div class="fw-name">{{ f.icon }} {{ f.name }}</div>
+              <div class="fw-right">
+                <span class="fw-version">v{{ f.version }}</span>
+                <span class="fw-cat" :class="'fw-cat-'+f.category.toLowerCase().replace(' ','')">{{ f.category }}</span>
+              </div>
+            </div>
+            <p class="fw-desc">{{ f.desc }}</p>
+            <div class="fw-tags"><span class="fw-tag" v-for="t in f.tags" :key="t">{{ t }}</span></div>
+            <div class="fw-stats">
+              <span class="fw-stat">⭐ <strong>{{ f.githubStars }}</strong></span>
+              <span class="fw-stat">📦 <strong>{{ f.weeklyDownloads }}</strong>/wk</span>
+              <span class="trend-badge" style="margin-left:auto" :class="f.trend==='hot'?'trend-hot':f.trend==='rising'?'trend-rising':'trend-stable'">
+                {{ f.trend==='hot'?'🔥 HOT':f.trend==='rising'?'↑ Rising':'✓ Stable' }}
+              </span>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.9rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+              <a :href="f.url" target="_blank" rel="noopener noreferrer"
+                 style="flex:1;text-align:center;font-size:0.75rem;font-weight:600;padding:5px 0;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.25);color:var(--accent);border-radius:7px;text-decoration:none">
+                🌐 Docs
+              </a>
+              <a :href="f.github" target="_blank" rel="noopener noreferrer"
+                 style="flex:1;text-align:center;font-size:0.75rem;font-weight:600;padding:5px 0;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:7px;text-decoration:none">
+                ⭐ GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stacks results -->
+      <div v-if="filteredStacks.length" class="gs-section">
+        <div class="gs-label">🔥 Trending Stacks <span>{{ filteredStacks.length }}</span></div>
+        <div class="stacks-grid">
+          <div class="stack-card" v-for="s in filteredStacks.slice(0,4)" :key="s.name">
+            <div class="stack-header">
+              <div class="stack-name">{{ s.icon }} {{ s.name }}</div>
+              <span class="trend-badge" :class="s.trendClass">{{ s.trend }}</span>
+            </div>
+            <p class="stack-desc">{{ s.desc }}</p>
+            <div class="stack-tags"><span class="stack-tag" v-for="t in s.tags" :key="t">{{ t }}</span></div>
+            <div class="progress-bar"><div class="progress-fill" :style="{width:s.popularity+'%'}"></div></div>
+            <div class="popularity-label"><span>Job demand</span><span>{{ s.popularity }}%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job skills results -->
+      <div v-if="filteredJobCats.length" class="gs-section">
+        <div class="gs-label">💼 Job Skills <span>{{ filteredJobCats.length }}</span></div>
+        <div class="jobs-layout">
+          <div class="job-cat-card" v-for="cat in filteredJobCats.slice(0,4)" :key="cat.title">
+            <div class="job-cat-title">{{ cat.icon }} {{ cat.title }}</div>
+            <div class="job-cat-sub">{{ cat.subtitle }}</div>
+            <div class="skill-list">
+              <div class="skill-row" v-for="sk in cat.skills" :key="sk.name">
+                <span class="skill-name">{{ sk.name }}</span>
+                <div class="skill-bar-wrap"><div class="skill-bar-fill" :style="{width:sk.demand+'%'}"></div></div>
+                <span class="skill-demand">{{ sk.demand }}%</span>
+              </div>
+            </div>
+            <div class="salary-badge">💰 {{ cat.salary }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI results -->
+      <div v-if="filteredAI.length" class="gs-section">
+        <div class="gs-label">🤖 AI &amp; LLM <span>{{ filteredAI.length }}</span></div>
+        <div class="news-grid">
+          <a class="news-card" v-for="item in filteredAI.slice(0,6)" :key="item.id"
+             :href="item.url" target="_blank" rel="noopener noreferrer">
+            <div class="card-meta">
+              <span class="ai-badge" :class="item.badgeClass">{{ item.badgeLabel }}</span>
+              <span class="card-time">{{ item.timeAgo }}</span>
+            </div>
+            <div class="card-title">{{ item.title }}</div>
+            <div class="card-footer">
+              <span class="stat">▲ {{ item.score }}</span>
+              <span class="stat">💬 {{ item.comments }}</span>
+            </div>
+          </a>
+        </div>
+        <div v-if="filteredAI.length > 6" class="gs-more" @click="setTab('ai')">View all {{ filteredAI.length }} AI results →</div>
+      </div>
+
+    </div><!-- /global-results -->
+
+    <!-- ══════════════════════════ NEWS TAB ══════════════════════════ -->
+    <div v-if="!query && activeTab==='news'">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon" style="background:rgba(255,102,0,0.15)">🗞️</div>
+          Latest Tech News
+        </div>
+        <button class="refresh-btn" :class="{spinning:loadingNews}" @click="loadNews">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div v-if="newsError" class="error-box">⚠ {{ newsError }} — showing cached articles</div>
+      <div v-if="loadingNews" class="skeleton-grid">
+        <div class="skeleton-card" v-for="i in 9" :key="i">
+          <div class="skeleton-line sl1"></div><div class="skeleton-line sl2"></div>
+          <div class="skeleton-line sl3"></div><div class="skeleton-line sl4"></div>
+        </div>
+      </div>
+      <div v-else class="news-grid">
+        <a class="news-card" v-for="item in news" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer">
+          <div class="card-meta">
+            <span class="source-chip" :class="item.sourceClass">{{ item.source }}</span>
+            <span class="card-time">{{ item.timeAgo }}</span>
+          </div>
+          <div class="card-title">{{ item.title }}</div>
+          <div class="tag-row"><span class="tag" v-for="t in item.tags" :key="t">{{ t }}</span></div>
+          <div class="card-footer">
+            <span class="stat">▲ {{ item.score }}</span>
+            <span class="stat">💬 {{ item.comments }}</span>
+            <span class="stat" style="margin-left:auto;font-size:0.7rem">{{ item.domain }}</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ JS & NODE.JS TAB ══════════════════════════ -->
+    <div v-if="!query && activeTab==='js'">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon" style="background:rgba(247,223,30,0.15)">🟨</div>
+          JavaScript, Node.js &amp; Latest Frameworks
+        </div>
+        <button class="refresh-btn" :class="{spinning:loadingJS}" @click="loadJS">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div v-if="jsError" class="error-box">⚠ {{ jsError }} — showing curated content</div>
+
+      <!-- Framework Pulse -->
+      <div style="margin-bottom:1rem">
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem">
+          ⚙️ Framework Pulse
+          <span style="font-size:0.72rem;font-weight:400;color:var(--muted)">— what's hot in 2025–26</span>
+        </div>
+        <!-- category filter -->
+        <div class="filter-chips">
+          <span class="chip" :class="{active:fwFilter==='All'}" @click="fwFilter='All'">All</span>
+          <span class="chip" :class="{active:fwFilter==='Frontend'}" @click="fwFilter='Frontend'">Frontend</span>
+          <span class="chip" :class="{active:fwFilter==='Backend'}" @click="fwFilter='Backend'">Backend</span>
+          <span class="chip" :class="{active:fwFilter==='Runtime'}" @click="fwFilter='Runtime'">Runtime</span>
+          <span class="chip" :class="{active:fwFilter==='Tooling'}" @click="fwFilter='Tooling'">Tooling</span>
+          <span class="chip" :class="{active:fwFilter==='Database'}" @click="fwFilter='Database'">Database</span>
+          <span class="chip" :class="{active:fwFilter==='API Layer'}" @click="fwFilter='API Layer'">API Layer</span>
+        </div>
+        <div class="fw-grid">
+          <div class="fw-card" v-for="f in filteredFrameworksByCategory" :key="f.name">
+            <div class="fw-header">
+              <div class="fw-name">{{ f.icon }} {{ f.name }}</div>
+              <div class="fw-right">
+                <span class="fw-version">v{{ f.version }}</span>
+                <span class="fw-cat" :class="'fw-cat-'+f.category.toLowerCase().replace(' ','')">{{ f.category }}</span>
+              </div>
+            </div>
+            <p class="fw-desc">{{ f.desc }}</p>
+            <div class="fw-tags"><span class="fw-tag" v-for="t in f.tags" :key="t">{{ t }}</span></div>
+            <div class="fw-stats">
+              <span class="fw-stat">⭐ <strong>{{ f.githubStars }}</strong></span>
+              <span class="fw-stat">📦 <strong>{{ f.weeklyDownloads }}</strong>/wk</span>
+              <span class="trend-badge" style="margin-left:auto;font-size:0.65rem" :class="f.trend==='hot'?'trend-hot':f.trend==='rising'?'trend-rising':'trend-stable'">
+                {{ f.trend==='hot'?'🔥 HOT':f.trend==='rising'?'↑ Rising':'✓ Stable' }}
+              </span>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.9rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+              <a :href="f.url" target="_blank" rel="noopener noreferrer"
+                 style="flex:1;text-align:center;font-size:0.75rem;font-weight:600;padding:5px 0;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.25);color:var(--accent);border-radius:7px;text-decoration:none;transition:background 0.15s"
+                 @mouseover="$event.target.style.background='rgba(108,99,255,0.22)'"
+                 @mouseout="$event.target.style.background='rgba(108,99,255,0.12)'">
+                🌐 Docs
+              </a>
+              <a :href="f.github" target="_blank" rel="noopener noreferrer"
+                 style="flex:1;text-align:center;font-size:0.75rem;font-weight:600;padding:5px 0;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:7px;text-decoration:none;transition:background 0.15s"
+                 @mouseover="$event.target.style.color='var(--text)'"
+                 @mouseout="$event.target.style.color='var(--muted)'">
+                ⭐ GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live JS News -->
+      <div>
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem">
+          📡 Latest JS &amp; Node.js Articles
+        </div>
+        <div v-if="loadingJS" class="skeleton-grid">
+          <div class="skeleton-card" v-for="i in 6" :key="i">
+            <div class="skeleton-line sl1"></div><div class="skeleton-line sl2"></div>
+            <div class="skeleton-line sl3"></div><div class="skeleton-line sl4"></div>
+          </div>
+        </div>
+        <div v-else class="news-grid">
+          <a class="news-card" v-for="item in jsNews" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer">
+            <div class="card-meta">
+              <span class="source-chip" :class="item.sourceClass">{{ item.source }}</span>
+              <span class="card-time">{{ item.timeAgo }}</span>
+            </div>
+            <div class="card-title">{{ item.title }}</div>
+            <div class="tag-row"><span class="tag" v-for="t in item.tags" :key="t">{{ t }}</span></div>
+            <div class="card-footer">
+              <span class="stat">▲ {{ item.score }}</span>
+              <span class="stat">💬 {{ item.comments }}</span>
+              <span class="stat" style="margin-left:auto;font-size:0.7rem">{{ item.domain }}</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ STACKS TAB ══════════════════════════ -->
+    <div v-if="!query && activeTab==='stacks'">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon" style="background:rgba(255,101,132,0.15)">🔥</div>
+          Trending Tech Stacks (2025–2026)
+        </div>
+      </div>
+      <div class="stacks-grid">
+        <div class="stack-card" v-for="s in stacks" :key="s.name">
+          <div class="stack-header">
+            <div class="stack-name">{{ s.icon }} {{ s.name }}</div>
+            <span class="trend-badge" :class="s.trendClass">{{ s.trend }}</span>
+          </div>
+          <p class="stack-desc">{{ s.desc }}</p>
+          <div class="stack-tags"><span class="stack-tag" v-for="t in s.tags" :key="t">{{ t }}</span></div>
+          <div class="progress-bar"><div class="progress-fill" :style="{width:s.popularity+'%'}"></div></div>
+          <div class="popularity-label"><span>Job demand index</span><span>{{ s.popularity }}%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ JOBS TAB ══════════════════════════ -->
+    <div v-if="!query && activeTab==='jobs'">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon" style="background:rgba(0,212,170,0.15)">💼</div>
+          Skills Most In-Demand Right Now
+        </div>
+      </div>
+      <div class="jobs-layout">
+        <div class="job-cat-card" v-for="cat in jobCategories" :key="cat.title">
+          <div class="job-cat-title">{{ cat.icon }} {{ cat.title }}</div>
+          <div class="job-cat-sub">{{ cat.subtitle }}</div>
+          <div class="skill-list">
+            <div class="skill-row" v-for="sk in cat.skills" :key="sk.name">
+              <span class="skill-name">{{ sk.name }}</span>
+              <div class="skill-bar-wrap"><div class="skill-bar-fill" :style="{width:sk.demand+'%'}"></div></div>
+              <span class="skill-demand">{{ sk.demand }}%</span>
+            </div>
+          </div>
+          <div class="salary-badge">💰 Avg: {{ cat.salary }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ AI TAB ══════════════════════════ -->
+    <div v-if="!query && activeTab==='ai'">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon" style="background:rgba(108,99,255,0.15)">🤖</div>
+          AI &amp; LLM Updates
+        </div>
+        <button class="refresh-btn" :class="{spinning:loadingAI}" @click="loadAI">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div v-if="aiError" class="error-box">⚠ {{ aiError }} — showing curated updates</div>
+      <div class="ai-featured" v-if="aiItems.length">
+        <div class="ai-big-card">
+          <div class="ai-badge" :class="aiItems[0].badgeClass">{{ aiItems[0].badgeLabel }}</div>
+          <div class="ai-big-title">{{ aiItems[0].title }}</div>
+          <p class="ai-big-desc">{{ aiItems[0].desc }}</p>
+          <div class="card-footer" style="margin-top:1rem">
+            <span class="stat">▲ {{ aiItems[0].score }}</span>
+            <span class="stat">💬 {{ aiItems[0].comments }}</span>
+            <a :href="aiItems[0].url" target="_blank" rel="noopener" style="margin-left:auto;font-size:0.78rem;color:var(--accent);text-decoration:none">Read more →</a>
+          </div>
+        </div>
+        <div class="ai-mini-stack">
+          <a class="ai-mini-card" v-for="item in aiItems.slice(1,4)" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer">
+            <div class="ai-badge" :class="item.badgeClass" style="margin-bottom:0.5rem">{{ item.badgeLabel }}</div>
+            <div class="ai-mini-title">{{ item.title }}</div>
+            <div class="ai-mini-meta">▲ {{ item.score }} · 💬 {{ item.comments }}</div>
+          </a>
+        </div>
+      </div>
+      <div v-if="loadingAI" class="skeleton-grid">
+        <div class="skeleton-card" v-for="i in 6" :key="i">
+          <div class="skeleton-line sl1"></div><div class="skeleton-line sl2"></div><div class="skeleton-line sl3"></div>
+        </div>
+      </div>
+      <div v-else class="news-grid">
+        <a class="news-card" v-for="item in aiItems.slice(4)" :key="item.id" :href="item.url" target="_blank" rel="noopener noreferrer">
+          <div class="card-meta">
+            <span class="ai-badge" :class="item.badgeClass">{{ item.badgeLabel }}</span>
+            <span class="card-time">{{ item.timeAgo }}</span>
+          </div>
+          <div class="card-title">{{ item.title }}</div>
+          <div class="card-footer">
+            <span class="stat">▲ {{ item.score }}</span>
+            <span class="stat">💬 {{ item.comments }}</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Built with ❤ using Vue 3 · Data from
+    <a href="https://news.ycombinator.com" target="_blank">Hacker News</a> &amp;
+    <a href="https://dev.to" target="_blank">Dev.to</a> ·
+    <span style="color:var(--accent2)">TechPulse 2026</span>
+  </footer>
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted } = Vue;
+
+// ─── HELPERS ─────────────────────────────────────────────────────────
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() / 1000) - ts);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+function getDomain(url) {
+  try { return new URL(url).hostname.replace('www.',''); } catch { return ''; }
+}
+function detectTags(title) {
+  const map = {
+    rust:['Rust'], python:['Python'], javascript:['JavaScript'], typescript:['TypeScript'],
+    'node.js':['Node.js'], nodejs:['Node.js'], node:['Node.js'],
+    bun:['Bun'], deno:['Deno'], react:['React'], next:['Next.js'], vue:['Vue'],
+    svelte:['Svelte'], astro:['Astro'], hono:['Hono'], elysia:['Elysia'],
+    vite:['Vite'], vitest:['Vitest'], drizzle:['Drizzle'], prisma:['Prisma'],
+    trpc:['tRPC'], fastify:['Fastify'], express:['Express'], nestjs:['NestJS'],
+    kubernetes:['Kubernetes'], docker:['Docker'], llm:['LLM'], gpt:['OpenAI'],
+    openai:['OpenAI'], anthropic:['Anthropic'], ai:['AI'], postgres:['PostgreSQL'],
+    go:['Go'], golang:['Go'], swift:['Swift'], aws:['AWS'], wasm:['WASM'],
+    remix:['Remix'], nuxt:['Nuxt'], biome:['Biome'],
+  };
+  const lower = title.toLowerCase();
+  const found = new Set();
+  for (const [k,v] of Object.entries(map)) {
+    if (lower.includes(k)) v.forEach(t => found.add(t));
+  }
+  return [...found].slice(0,4);
+}
+function aiCategory(title) {
+  const t = title.toLowerCase();
+  if (/gpt|llm|model|claude|gemini|gemma|mistral|llama/.test(t)) return { label:'🧠 Model', cls:'ai-badge-model' };
+  if (/research|paper|benchmark/.test(t)) return { label:'📖 Research', cls:'ai-badge-research' };
+  return { label:'🛠 Tool', cls:'ai-badge-tool' };
+}
+
+// ─── STATIC FALLBACKS ────────────────────────────────────────────────
+const STATIC_NEWS = [
+  { id:1, title:"Rust is now the 3rd most-used language in the Linux kernel", url:"https://news.ycombinator.com", source:"HN", sourceClass:"source-hn", score:1842, comments:312, timeAgo:"2h ago", domain:"linux.dev", tags:["Rust","Linux","Systems"] },
+  { id:2, title:"OpenAI releases o3-mini with function calling and 128k context", url:"https://openai.com", source:"HN", sourceClass:"source-hn", score:2105, comments:498, timeAgo:"4h ago", domain:"openai.com", tags:["AI","LLM","OpenAI"] },
+  { id:3, title:"Bun 2.0: faster Node.js replacement now production-ready", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:1560, comments:284, timeAgo:"6h ago", domain:"bun.sh", tags:["JavaScript","Runtime","Bun"] },
+  { id:4, title:"PostgreSQL 17 benchmarks: 40% faster than v16", url:"https://postgresql.org", source:"HN", sourceClass:"source-hn", score:987, comments:142, timeAgo:"8h ago", domain:"postgresql.org", tags:["PostgreSQL","Database"] },
+  { id:5, title:"Next.js 15 App Router: Everything you need to know in 2026", url:"https://nextjs.org", source:"DEV", sourceClass:"source-devto", score:645, comments:88, timeAgo:"10h ago", domain:"dev.to", tags:["Next.js","React","SSR"] },
+  { id:6, title:"Kubernetes 1.32 drops Docker shim", url:"https://kubernetes.io", source:"HN", sourceClass:"source-hn", score:1023, comments:195, timeAgo:"12h ago", domain:"kubernetes.io", tags:["Kubernetes","Docker","DevOps"] },
+];
+
+const STATIC_JS_NEWS = [
+  { id:201, title:"Node.js 24 LTS: New V8 engine, built-in fetch, and permission model", url:"https://nodejs.org", source:"HN", sourceClass:"source-hn", score:1980, comments:287, timeAgo:"3h ago", domain:"nodejs.org", tags:["Node.js","JavaScript","V8"] },
+  { id:202, title:"Bun 1.2 ships native S3, SQLite and faster startup than ever", url:"https://bun.sh", source:"HN", sourceClass:"source-hn", score:2210, comments:412, timeAgo:"5h ago", domain:"bun.sh", tags:["Bun","JavaScript","Runtime"] },
+  { id:203, title:"Deno 2.1: Full npm compatibility lands — time to migrate?", url:"https://deno.land", source:"HN", sourceClass:"source-hn", score:1340, comments:256, timeAgo:"7h ago", domain:"deno.land", tags:["Deno","Node.js","TypeScript"] },
+  { id:204, title:"Hono 4.x: The fastest web framework for every JS runtime", url:"https://hono.dev", source:"DEV", sourceClass:"source-devto", score:876, comments:134, timeAgo:"9h ago", domain:"hono.dev", tags:["Hono","Bun","TypeScript"] },
+  { id:205, title:"SvelteKit 2.0 release: runes, snippets, and what changed", url:"https://svelte.dev", source:"DEV", sourceClass:"source-devto", score:1120, comments:198, timeAgo:"11h ago", domain:"svelte.dev", tags:["Svelte","SvelteKit","JavaScript"] },
+  { id:206, title:"Vite 6 + Rolldown: Rust-powered bundler 10× faster in CI", url:"https://vitejs.dev", source:"HN", sourceClass:"source-hn", score:1450, comments:234, timeAgo:"13h ago", domain:"vitejs.dev", tags:["Vite","Rollup","Tooling"] },
+  { id:207, title:"Drizzle ORM overtakes Prisma in weekly npm downloads", url:"https://orm.drizzle.team", source:"HN", sourceClass:"source-hn", score:1670, comments:321, timeAgo:"15h ago", domain:"drizzle.team", tags:["Drizzle","ORM","TypeScript"] },
+  { id:208, title:"Node.js vs Bun vs Deno in 2026: the definitive benchmark", url:"https://dev.to", source:"DEV", sourceClass:"source-devto", score:934, comments:167, timeAgo:"18h ago", domain:"dev.to", tags:["Node.js","Bun","Deno"] },
+  { id:209, title:"Astro 5 Content Layer: build 10× faster static sites", url:"https://astro.build", source:"DEV", sourceClass:"source-devto", score:743, comments:112, timeAgo:"1d ago", domain:"astro.build", tags:["Astro","JavaScript","SSG"] },
+  { id:210, title:"tRPC v11 + Next.js 15: end-to-end type safety guide 2026", url:"https://trpc.io", source:"DEV", sourceClass:"source-devto", score:612, comments:88, timeAgo:"1d ago", domain:"trpc.io", tags:["tRPC","Next.js","TypeScript"] },
+  { id:211, title:"Why Fastify beats Express in every production benchmark", url:"https://fastify.dev", source:"HN", sourceClass:"source-hn", score:1102, comments:189, timeAgo:"2d ago", domain:"fastify.dev", tags:["Fastify","Express","Node.js"] },
+  { id:212, title:"Biome 2.0: Replace ESLint and Prettier with one Rust tool", url:"https://biomejs.dev", source:"HN", sourceClass:"source-hn", score:879, comments:145, timeAgo:"2d ago", domain:"biomejs.dev", tags:["Biome","ESLint","Tooling"] },
+];
+
+const STATIC_AI = [
+  { id:101, title:"Claude 4 Sonnet achieves state-of-the-art on coding benchmarks", url:"https://anthropic.com", source:"HN", score:2340, comments:521, timeAgo:"1h ago", badgeLabel:"🧠 Model", badgeClass:"ai-badge-model", desc:"Anthropic's latest model shows unprecedented performance on SWE-bench, solving 72% of real-world GitHub issues. Features improved tool use and a 200k context window." },
+  { id:102, title:"LangChain vs LlamaIndex in 2026: which to pick?", url:"https://dev.to", source:"DEV", score:1120, comments:234, timeAgo:"3h ago", badgeLabel:"🛠 Tool", badgeClass:"ai-badge-tool", desc:"" },
+  { id:103, title:"Google releases Gemma 3: open-source 27B model with vision", url:"https://ai.google.dev", source:"HN", score:1890, comments:390, timeAgo:"5h ago", badgeLabel:"🧠 Model", badgeClass:"ai-badge-model", desc:"" },
+  { id:104, title:"Fine-tuning LLMs on your laptop: the complete 2026 guide", url:"https://dev.to", source:"DEV", score:756, comments:143, timeAgo:"7h ago", badgeLabel:"📖 Research", badgeClass:"ai-badge-research", desc:"" },
+  { id:105, title:"Agentic AI frameworks: CrewAI, AutoGen, Swarm compared", url:"https://dev.to", source:"DEV", score:834, comments:162, timeAgo:"9h ago", badgeLabel:"🛠 Tool", badgeClass:"ai-badge-tool", desc:"" },
+  { id:106, title:"vLLM 0.6 slashes memory by 30% with PagedAttention v2", url:"https://github.com/vllm-project/vllm", source:"HN", score:972, comments:201, timeAgo:"11h ago", badgeLabel:"📖 Research", badgeClass:"ai-badge-research", desc:"" },
+  { id:107, title:"MCP (Model Context Protocol) is becoming the USB-C of AI", url:"https://news.ycombinator.com", source:"HN", score:1450, comments:318, timeAgo:"13h ago", badgeLabel:"🛠 Tool", badgeClass:"ai-badge-tool", desc:"" },
+];
+
+// ─── FRAMEWORK DATA ───────────────────────────────────────────────────
+const FRAMEWORKS = [
+  { name:'Hono', icon:'🔥', version:'4.x', category:'Backend', trend:'hot', url:'https://hono.dev', github:'https://github.com/honojs/hono', desc:'Ultra-fast web framework for Edge, Bun, Deno, and Node.js. Becoming the go-to for serverless APIs in 2026.', tags:['Bun','Deno','Edge','TypeScript','REST'], githubStars:'21k', weeklyDownloads:'4M' },
+  { name:'Bun', icon:'🍞', version:'1.2', category:'Runtime', trend:'hot', url:'https://bun.sh', github:'https://github.com/oven-sh/bun', desc:'All-in-one JS runtime, bundler, and package manager. 3× faster than Node for most workloads. Drop-in npm replacement.', tags:['Runtime','Bundler','npm-compat','TypeScript'], githubStars:'75k', weeklyDownloads:'12M' },
+  { name:'Deno 2', icon:'🦕', version:'2.x', category:'Runtime', trend:'rising', url:'https://deno.com', github:'https://github.com/denoland/deno', desc:'Secure-by-default Node.js alternative. Full npm compat in v2 removes last adoption barrier. Built-in TypeScript.', tags:['Runtime','Security','npm','TypeScript','JSR'], githubStars:'98k', weeklyDownloads:'8M' },
+  { name:'Elysia', icon:'🌸', version:'1.x', category:'Backend', trend:'rising', url:'https://elysiajs.com', github:'https://github.com/elysiajs/elysia', desc:'Bun-native TypeScript web framework with end-to-end type safety via Eden Treaty. Fastest TS framework alive.', tags:['Bun','TypeScript','E2E Types','Fast'], githubStars:'11k', weeklyDownloads:'1.5M' },
+  { name:'SvelteKit 2', icon:'🟠', version:'2.x', category:'Frontend', trend:'hot', url:'https://kit.svelte.dev', github:'https://github.com/sveltejs/kit', desc:'Full-stack Svelte framework with runes and snippets. No virtual DOM means tiny bundles and instant interactivity.', tags:['Svelte','SSR','Runes','Vite','TypeScript'], githubStars:'18k', weeklyDownloads:'6M' },
+  { name:'Astro 5', icon:'🚀', version:'5.x', category:'Frontend', trend:'hot', url:'https://astro.build', github:'https://github.com/withastro/astro', desc:'Content-first framework with "islands" architecture. Zero JS by default, best Lighthouse scores. Content Layer API in v5.', tags:['Islands','SSG','MDX','Content','View Transitions'], githubStars:'47k', weeklyDownloads:'10M' },
+  { name:'tRPC', icon:'🔗', version:'11.x', category:'API Layer', trend:'stable', url:'https://trpc.io', github:'https://github.com/trpc/trpc', desc:'End-to-end typesafe APIs without a schema. Pairs perfectly with Next.js and Drizzle/Prisma for full-stack TypeScript.', tags:['TypeScript','Next.js','Prisma','Full-Stack'], githubStars:'36k', weeklyDownloads:'7M' },
+  { name:'Drizzle ORM', icon:'💧', version:'0.3x', category:'Database', trend:'hot', url:'https://orm.drizzle.team', github:'https://github.com/drizzle-team/drizzle-orm', desc:'Lightweight TypeScript ORM overtaking Prisma in npm downloads. SQL-first with great DX and zero overhead.', tags:['ORM','TypeScript','SQL','PostgreSQL','SQLite'], githubStars:'25k', weeklyDownloads:'9M' },
+  { name:'Vite 6', icon:'⚡', version:'6.x', category:'Tooling', trend:'stable', url:'https://vitejs.dev', github:'https://github.com/vitejs/vite', desc:'The build tool of the modern JS ecosystem. Powers SvelteKit, Astro, Nuxt, Remix, and more. Rolldown (Rust) coming.', tags:['Build','HMR','ESM','Rollup','Rolldown'], githubStars:'67k', weeklyDownloads:'30M' },
+  { name:'Remix 3', icon:'💿', version:'3.x', category:'Frontend', trend:'rising', url:'https://remix.run', github:'https://github.com/remix-run/remix', desc:'Full-stack React framework by the React Router team. Nested routes and progressive enhancement. Now built on Vite.', tags:['React','SSR','React Router','Vite'], githubStars:'29k', weeklyDownloads:'5M' },
+  { name:'Fastify 5', icon:'⚙️', version:'5.x', category:'Backend', trend:'stable', url:'https://fastify.dev', github:'https://github.com/fastify/fastify', desc:'Production-grade Node.js API framework. 30k req/sec out of the box. JSON schema validation and plugin ecosystem.', tags:['Node.js','JSON Schema','Plugins','TypeScript'], githubStars:'31k', weeklyDownloads:'13M' },
+  { name:'Biome', icon:'🌿', version:'1.x', category:'Tooling', trend:'rising', url:'https://biomejs.dev', github:'https://github.com/biomejs/biome', desc:'Fast Rust-based linter + formatter replacing ESLint + Prettier. Single config, zero deps, 50× faster linting.', tags:['Linting','Formatting','Rust','ESLint-alt'], githubStars:'16k', weeklyDownloads:'4M' },
+  { name:'Nuxt 4', icon:'💚', version:'4.x', category:'Frontend', trend:'rising', url:'https://nuxt.com', github:'https://github.com/nuxt/nuxt', desc:'The Vue full-stack framework. Nuxt 4 with Nitro 2 server delivers Vue SSR with the DX of Next.js.', tags:['Vue','SSR','Nitro','Vite','TypeScript'], githubStars:'54k', weeklyDownloads:'11M' },
+  { name:'Vitest 3', icon:'🧪', version:'3.x', category:'Tooling', trend:'stable', url:'https://vitest.dev', github:'https://github.com/vitest-dev/vitest', desc:'Vite-native unit testing framework replacing Jest. Browser mode, inline snapshots, and near-instant test runs.', tags:['Testing','Jest-alt','Vite','Coverage'], githubStars:'13k', weeklyDownloads:'14M' },
+];
+
+// ─── STACKS ───────────────────────────────────────────────────────────
+const STACKS = [
+  { name:"Next.js + TypeScript", icon:"⚛️", trend:"🔥 HOT", trendClass:"trend-hot", popularity:92, desc:"The go-to full-stack React framework. SSR, App Router, and Vercel ecosystem dominate modern web roles.", tags:["React","TypeScript","Node","Tailwind","Prisma"] },
+  { name:"Python + FastAPI + AI", icon:"🐍", trend:"🔥 HOT", trendClass:"trend-hot", popularity:95, desc:"FastAPI for APIs paired with LangChain / OpenAI SDK. Most-hired backend stack in 2026.", tags:["Python","FastAPI","LangChain","SQLModel","Redis"] },
+  { name:"Bun + Hono + Drizzle", icon:"🟨", trend:"🔥 HOT", trendClass:"trend-hot", popularity:80, desc:"The modern JS backend stack: Bun as runtime, Hono for APIs, Drizzle for DB. Blazing fast and type-safe.", tags:["Bun","Hono","Drizzle","TypeScript","PostgreSQL"] },
+  { name:"Rust + WebAssembly", icon:"🦀", trend:"↑ Rising", trendClass:"trend-rising", popularity:68, desc:"Systems programming and edge computing. Increasingly sought for performance-critical roles at big tech.", tags:["Rust","WASM","Tokio","Axum","WebAssembly"] },
+  { name:"Go + Kubernetes", icon:"🐹", trend:"↑ Rising", trendClass:"trend-rising", popularity:78, desc:"Cloud-native backends and microservices. Go is the language of choice for infrastructure and DevOps tooling.", tags:["Go","K8s","Docker","gRPC","Prometheus"] },
+  { name:"React Native + Expo", icon:"📱", trend:"✓ Stable", trendClass:"trend-stable", popularity:74, desc:"Cross-platform mobile development. Expo SDK 51+ makes native apps easier than ever.", tags:["React Native","Expo","TypeScript","Redux","Firebase"] },
+  { name:"Vue 3 + Nuxt 4", icon:"💚", trend:"✓ Stable", trendClass:"trend-stable", popularity:65, desc:"European and startup favourite. Nuxt 4 with Nitro server makes Vue a viable full-stack choice.", tags:["Vue3","Nuxt","Pinia","Vite","TailwindCSS"] },
+  { name:"LLM / AI Engineer", icon:"🤖", trend:"🔥 HOT", trendClass:"trend-hot", popularity:98, desc:"Prompt engineering, RAG pipelines, fine-tuning, and agentic systems. The highest-demand new role of 2025-26.", tags:["Python","LangChain","LlamaIndex","Vector DB","MCP"] },
+  { name:"Cloud Native (AWS/GCP)", icon:"☁️", trend:"↑ Rising", trendClass:"trend-rising", popularity:88, desc:"Terraform, CDK, and cloud-native architecture skills. Required for virtually all mid-to-senior backend roles.", tags:["AWS","Terraform","CDK","Lambda","DynamoDB"] },
+];
+
+// ─── JOB CATEGORIES ───────────────────────────────────────────────────
+const JOB_CATS = [
+  { title:"Frontend / Full-Stack", icon:"🎨", subtitle:"Highest volume of open roles in 2026", salary:"$130k – $190k / yr", skills:[{name:"TypeScript",demand:95},{name:"React / Next.js",demand:92},{name:"Tailwind CSS",demand:82},{name:"GraphQL / REST",demand:75},{name:"Testing (Vitest)",demand:66}] },
+  { title:"Backend / Node.js", icon:"⚙️", subtitle:"Node.js, Bun, and Go dominate new job postings", salary:"$140k – $200k / yr", skills:[{name:"Node.js / Bun",demand:90},{name:"TypeScript",demand:88},{name:"PostgreSQL",demand:85},{name:"Redis / Cache",demand:70},{name:"gRPC / REST",demand:65}] },
+  { title:"AI / ML Engineer", icon:"🧠", subtitle:"Fastest-growing category; 3× YoY demand", salary:"$160k – $260k / yr", skills:[{name:"Python + PyTorch",demand:96},{name:"LLM Fine-tuning",demand:88},{name:"RAG Pipelines",demand:84},{name:"Vector DBs",demand:78},{name:"MLOps / CI-CD",demand:70}] },
+  { title:"DevOps / Platform", icon:"🚀", subtitle:"Cloud-native infra skills remain scarce", salary:"$145k – $210k / yr", skills:[{name:"Kubernetes",demand:90},{name:"Terraform / IaC",demand:88},{name:"AWS / GCP",demand:92},{name:"CI/CD (GH Actions)",demand:82},{name:"Observability",demand:72}] },
+  { title:"Mobile (iOS / Android)", icon:"📱", subtitle:"Swift + React Native still dominate", salary:"$130k – $185k / yr", skills:[{name:"Swift / SwiftUI",demand:80},{name:"React Native",demand:76},{name:"Kotlin",demand:72},{name:"Expo SDK",demand:65},{name:"Firebase",demand:60}] },
+  { title:"Security / Blockchain", icon:"🔒", subtitle:"Niche but very well-paid", salary:"$155k – $230k / yr", skills:[{name:"Rust / Solidity",demand:72},{name:"ZK Proofs",demand:55},{name:"Pen Testing",demand:68},{name:"Cloud Security",demand:80},{name:"SIEM / SOAR",demand:60}] },
+];
+
+// ─── APP ──────────────────────────────────────────────────────────────
+createApp({
+  setup() {
+    const activeTab = ref('news');
+    const query = ref('');
+    const fwFilter = ref('All');
+
+    const news = ref([]);
+    const loadingNews = ref(false);
+    const newsError = ref('');
+
+    const jsNews = ref([]);
+    const loadingJS = ref(false);
+    const jsError = ref('');
+
+    const aiItems = ref([]);
+    const loadingAI = ref(false);
+    const aiError = ref('');
+
+    const stacks = ref(STACKS);
+    const frameworks = ref(FRAMEWORKS);
+    const jobCategories = ref(JOB_CATS);
+
+    function setTab(tab) { activeTab.value = tab; query.value = ''; }
+
+    // ── HN fetch helper ──
+    async function fetchHN(ids, maxItems = 20) {
+      const items = [];
+      const subset = ids.slice(0, maxItems * 4);
+      const fetched = await Promise.allSettled(
+        subset.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r=>r.json()))
+      );
+      for (const r of fetched) {
+        if (r.status === 'fulfilled' && r.value && r.value.title && r.value.url) items.push(r.value);
+        if (items.length >= maxItems) break;
+      }
+      return items;
+    }
+
+    // ── Load General News ──
+    async function loadNews() {
+      loadingNews.value = true; newsError.value = '';
+      try {
+        const ids = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json').then(r=>r.json());
+        const raw = await fetchHN(ids, 24);
+        news.value = raw.map(item => ({
+          id: item.id, title: item.title, url: item.url,
+          source: 'HN', sourceClass: 'source-hn',
+          score: item.score||0, comments: item.descendants||0,
+          timeAgo: timeAgo(item.time), domain: getDomain(item.url),
+          tags: detectTags(item.title),
+        }));
+      } catch(e) { newsError.value = 'Could not reach Hacker News API.'; news.value = STATIC_NEWS; }
+      finally { loadingNews.value = false; }
+    }
+
+    // ── Load JS / Node.js / Frameworks ──
+    async function loadJS() {
+      loadingJS.value = true; jsError.value = '';
+      try {
+        const jsTags = ['javascript','node','typescript','react','vue','svelte','nextjs','bun','deno'];
+        const devtoFetches = jsTags.slice(0,4).map(tag =>
+          fetch(`https://dev.to/api/articles?tag=${tag}&per_page=8&top=7`).then(r=>r.json()).catch(()=>[])
+        );
+        const devtoResults = await Promise.all(devtoFetches);
+        const allDevto = devtoResults.flat();
+
+        // dedup by id
+        const seenDev = new Set();
+        const devtoJS = allDevto
+          .filter(a => { if (seenDev.has(a.id)) return false; seenDev.add(a.id); return true; })
+          .sort((a,b) => (b.positive_reactions_count||0) - (a.positive_reactions_count||0))
+          .slice(0, 14)
+          .map(a => ({
+            id: 'dt-'+a.id, title: a.title,
+            url: a.url || `https://dev.to${a.path}`,
+            source: 'DEV', sourceClass: 'source-devto',
+            score: a.positive_reactions_count||0, comments: a.comments_count||0,
+            timeAgo: timeAgo(new Date(a.published_at).getTime()/1000),
+            domain: 'dev.to', tags: detectTags(a.title),
+          }));
+
+        // HN JS stories
+        let hnJS = [];
+        try {
+          const ids = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json').then(r=>r.json());
+          const hnItems = await fetchHN(ids, 80);
+          const jsKw = /\b(node\.?js|javascript|typescript|bun|deno|npm|react|vue|svelte|astro|vite|hono|elysia|fastify|express|remix|nuxt|nextjs|next\.js|drizzle|trpc|vitest|biome|wasm|webassembly)\b/i;
+          hnJS = hnItems
+            .filter(i => jsKw.test(i.title))
+            .slice(0, 10)
+            .map(item => ({
+              id: item.id, title: item.title, url: item.url,
+              source: 'HN', sourceClass: 'source-hn',
+              score: item.score||0, comments: item.descendants||0,
+              timeAgo: timeAgo(item.time), domain: getDomain(item.url),
+              tags: detectTags(item.title),
+            }));
+        } catch(_) {}
+
+        const merged = [...hnJS, ...devtoJS];
+        jsNews.value = merged.length > 0 ? merged : STATIC_JS_NEWS;
+      } catch(e) { jsError.value = 'Could not fetch live JS articles.'; jsNews.value = STATIC_JS_NEWS; }
+      finally { loadingJS.value = false; }
+    }
+
+    // ── Load AI ──
+    async function loadAI() {
+      loadingAI.value = true; aiError.value = '';
+      try {
+        const [devtoResp] = await Promise.all([
+          fetch('https://dev.to/api/articles?tag=ai&per_page=16&top=7').then(r=>r.json()),
+        ]);
+        let hnAI = [];
+        try {
+          const ids = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json').then(r=>r.json());
+          const hnItems = await fetchHN(ids, 60);
+          const aiKw = /\b(ai|llm|gpt|claude|gemini|mistral|llama|langchain|openai|anthropic|neural|transformer|rag|agent|diffusion|hugging|ollama|vllm)\b/i;
+          hnAI = hnItems.filter(i => aiKw.test(i.title)).slice(0,6).map(item => {
+            const cat = aiCategory(item.title);
+            return { id:item.id, title:item.title, url:item.url, source:'HN', score:item.score||0, comments:item.descendants||0, timeAgo:timeAgo(item.time), desc:'', badgeLabel:cat.label, badgeClass:cat.cls };
+          });
+        } catch(_) {}
+        const devtoAI = devtoResp.map(a => {
+          const cat = aiCategory(a.title);
+          return { id:'dt-'+a.id, title:a.title, url:a.url||`https://dev.to${a.path}`, source:'DEV', score:a.positive_reactions_count||0, comments:a.comments_count||0, timeAgo:timeAgo(new Date(a.published_at).getTime()/1000), desc:a.description||'', badgeLabel:cat.label, badgeClass:cat.cls };
+        });
+        const merged = [...hnAI, ...devtoAI].slice(0,16);
+        aiItems.value = merged.length > 0 ? merged : STATIC_AI;
+      } catch(e) { aiError.value = 'Could not reach API.'; aiItems.value = STATIC_AI; }
+      finally { loadingAI.value = false; }
+    }
+
+    // ── Filtered computed ──
+    const filteredFrameworksByCategory = computed(() => {
+      if (fwFilter.value === 'All') return frameworks.value;
+      return frameworks.value.filter(f => f.category === fwFilter.value);
+    });
+
+    function searchItems(items, q, fields) {
+      return items.filter(item => fields.some(f => (item[f]||'').toLowerCase().includes(q)));
+    }
+    function searchNews(items, q) {
+      return items.filter(n => n.title.toLowerCase().includes(q) || n.tags.some(t => t.toLowerCase().includes(q)) || (n.domain||'').toLowerCase().includes(q));
+    }
+    function searchStacks(items, q) {
+      return items.filter(s => s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q)));
+    }
+    function searchJobs(items, q) {
+      return items.filter(c => c.title.toLowerCase().includes(q) || c.skills.some(s => s.name.toLowerCase().includes(q)));
+    }
+    function searchAI(items, q) {
+      return items.filter(a => a.title.toLowerCase().includes(q) || (a.desc||'').toLowerCase().includes(q));
+    }
+    function searchFW(items, q) {
+      return items.filter(f => f.name.toLowerCase().includes(q) || f.desc.toLowerCase().includes(q) || f.tags.some(t => t.toLowerCase().includes(q)) || f.category.toLowerCase().includes(q));
+    }
+
+    const filteredNews = computed(() => { if (!query.value) return news.value; return searchNews(news.value, query.value.toLowerCase()); });
+    const filteredJSNews = computed(() => { if (!query.value) return jsNews.value; return searchNews(jsNews.value, query.value.toLowerCase()); });
+    const filteredFrameworks = computed(() => { if (!query.value) return frameworks.value; return searchFW(frameworks.value, query.value.toLowerCase()); });
+    const filteredStacks = computed(() => { if (!query.value) return stacks.value; return searchStacks(stacks.value, query.value.toLowerCase()); });
+    const filteredJobCats = computed(() => { if (!query.value) return jobCategories.value; return searchJobs(jobCategories.value, query.value.toLowerCase()); });
+    const filteredAI = computed(() => { if (!query.value) return aiItems.value; return searchAI(aiItems.value, query.value.toLowerCase()); });
+
+    const globalTotal = computed(() =>
+      filteredNews.value.length + filteredJSNews.value.length + filteredFrameworks.value.length +
+      filteredStacks.value.length + filteredJobCats.value.length + filteredAI.value.length
+    );
+
+    onMounted(() => { loadNews(); loadJS(); loadAI(); });
+
+    return {
+      activeTab, query, fwFilter, setTab,
+      news, loadingNews, newsError, loadNews,
+      jsNews, loadingJS, jsError, loadJS,
+      aiItems, loadingAI, aiError, loadAI,
+      stacks, frameworks, jobCategories,
+      filteredNews, filteredJSNews, filteredFrameworks,
+      filteredStacks, filteredJobCats, filteredAI,
+      filteredFrameworksByCategory, globalTotal,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
