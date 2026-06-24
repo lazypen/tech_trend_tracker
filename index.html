@@ -418,6 +418,7 @@
         <div style="display:flex;align-items:center;gap:0.5rem">
           <span v-if="newsIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
           <span v-else-if="newsIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <span v-if="newsLastFetched" style="font-size:0.7rem;color:var(--muted)">Updated {{ fmtTime(newsLastFetched) }}</span>
           <button class="refresh-btn" :class="{spinning:loadingNews}" @click="loadNews">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             Refresh
@@ -458,6 +459,7 @@
         <div style="display:flex;align-items:center;gap:0.5rem">
           <span v-if="jsIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
           <span v-else-if="jsIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <span v-if="jsLastFetched" style="font-size:0.7rem;color:var(--muted)">Updated {{ fmtTime(jsLastFetched) }}</span>
           <button class="refresh-btn" :class="{spinning:loadingJS}" @click="loadJS">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             Refresh
@@ -605,6 +607,7 @@
         <div style="display:flex;align-items:center;gap:0.5rem">
           <span v-if="aiIsLive === true" class="data-badge data-badge-live"><span class="data-dot data-dot-live"></span>LIVE</span>
           <span v-else-if="aiIsLive === false" class="data-badge data-badge-cached"><span class="data-dot data-dot-cached"></span>CACHED</span>
+          <span v-if="aiLastFetched" style="font-size:0.7rem;color:var(--muted)">Updated {{ fmtTime(aiLastFetched) }}</span>
           <button class="refresh-btn" :class="{spinning:loadingAI}" @click="loadAI">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
             Refresh
@@ -778,6 +781,11 @@ const JOB_CATS = [
   { title:"Security / Blockchain", icon:"🔒", subtitle:"Niche but very well-paid", salary:"$155k – $230k / yr", skills:[{name:"Rust / Solidity",demand:72},{name:"ZK Proofs",demand:55},{name:"Pen Testing",demand:68},{name:"Cloud Security",demand:80},{name:"SIEM / SOAR",demand:60}] },
 ];
 
+function fmtTime(d) {
+  if (!d) return '';
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' · ' + d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
 // ─── APP ──────────────────────────────────────────────────────────────
 createApp({
   setup() {
@@ -789,16 +797,19 @@ createApp({
     const loadingNews = ref(false);
     const newsError = ref('');
     const newsIsLive = ref(null);
+    const newsLastFetched = ref(null);
 
     const jsNews = ref([]);
     const loadingJS = ref(false);
     const jsError = ref('');
     const jsIsLive = ref(null);
+    const jsLastFetched = ref(null);
 
     const aiItems = ref([]);
     const loadingAI = ref(false);
     const aiError = ref('');
     const aiIsLive = ref(null);
+    const aiLastFetched = ref(null);
 
     const stacks = ref(STACKS);
     const frameworks = ref(FRAMEWORKS);
@@ -833,7 +844,7 @@ createApp({
           timeAgo: timeAgo(item.time), domain: getDomain(item.url),
           tags: detectTags(item.title),
         }));
-        newsIsLive.value = true;
+        newsIsLive.value = true; newsLastFetched.value = new Date();
       } catch(e) { newsError.value = 'Could not reach Hacker News API.'; news.value = STATIC_NEWS; newsIsLive.value = false; }
       finally { loadingNews.value = false; }
     }
@@ -884,7 +895,7 @@ createApp({
 
         const merged = [...hnJS, ...devtoJS];
         jsNews.value = merged.length > 0 ? merged : STATIC_JS_NEWS;
-        jsIsLive.value = merged.length > 0;
+        jsIsLive.value = merged.length > 0; if (merged.length > 0) jsLastFetched.value = new Date();
       } catch(e) { jsError.value = 'Could not fetch live JS articles.'; jsNews.value = STATIC_JS_NEWS; jsIsLive.value = false; }
       finally { loadingJS.value = false; }
     }
@@ -912,7 +923,7 @@ createApp({
         });
         const merged = [...hnAI, ...devtoAI].slice(0,16);
         aiItems.value = merged.length > 0 ? merged : STATIC_AI;
-        aiIsLive.value = merged.length > 0;
+        aiIsLive.value = merged.length > 0; if (merged.length > 0) aiLastFetched.value = new Date();
       } catch(e) { aiError.value = 'Could not reach API.'; aiItems.value = STATIC_AI; aiIsLive.value = false; }
       finally { loadingAI.value = false; }
     }
@@ -958,9 +969,10 @@ createApp({
 
     return {
       activeTab, query, fwFilter, setTab,
-      news, loadingNews, newsError, newsIsLive, loadNews,
-      jsNews, loadingJS, jsError, jsIsLive, loadJS,
-      aiItems, loadingAI, aiError, aiIsLive, loadAI,
+      news, loadingNews, newsError, newsIsLive, newsLastFetched, loadNews,
+      jsNews, loadingJS, jsError, jsIsLive, jsLastFetched, loadJS,
+      aiItems, loadingAI, aiError, aiIsLive, aiLastFetched, loadAI,
+      fmtTime,
       stacks, frameworks, jobCategories,
       filteredNews, filteredJSNews, filteredFrameworks,
       filteredStacks, filteredJobCats, filteredAI,
